@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { WebrtcModule } from './webrtc/webrtc.module';
 
 @Module({
-  imports: [],
+  imports: [WebrtcModule],
   controllers: [AppController],
   providers: [AppService],
 })
