@@ -7,7 +7,7 @@ const useWebsocket = () => {
   const [socket, setSocket] = useState<Socket>();
 
   useEffect(() => {
-    const newSocket = io(endpoint);
+    const newSocket = io(endpoint, { transports: ["websocket"] });
     setSocket(newSocket);
 
     return () => {

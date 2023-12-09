@@ -10,11 +10,12 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
+import { subscribeOn } from 'rxjs';
 
 @WebSocketGateway(8001, {
   namespace: 'chat',
   cors: { origin: '*' },
-  // transports: ['websocket'],
+  transports: ['websocket'],
 })
 export class WebrtcGateway implements OnGatewayConnection, OnGatewayDisconnect {
   readonly log = new Logger(WebSocketGateway.name);
@@ -48,5 +49,36 @@ export class WebrtcGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleStart(client: Socket, data: string) {
     this.log.debug('client', client);
     this.log.debug('data', data);
+  }
+
+  @SubscribeMessage('offer')
+  handleOffer(client: Socket, data: string) {
+    this.log.debug(`offer: ${data}`);
+    for (const c of this.clients) {
+      this.log.log(`offer to ${c.id}`);
+      if (client.id === c.id) {
+        this.log.log(`skip ${c.id}`);
+        continue;
+      }
+      c.emit('offer', data);
+    }
+  }
+
+  @SubscribeMessage('answer')
+  handleAnswer(client: Socket, data: string) {
+    this.log.debug(`answer: ${data}`);
+    for (const c of this.clients) {
+      if (client.id === c.id) continue;
+      c.emit('answer', data);
+    }
+  }
+
+  @SubscribeMessage('ice-candidate')
+  handleIceCandidate(client: Socket, data: string) {
+    this.log.debug(`ice candidate: ${data}`);
+    for (const c of this.clients) {
+      if (client.id === c.id) continue;
+      c.emit('ice-candidate', data);
+    }
   }
 }
