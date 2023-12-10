@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import useWebsocket from "./hooks/useWebsocket";
 import Video from "@/component/Video";
 
+const stun = "stun:stun.l.google.com:19302";
+
 export default function Home() {
   const [stream, setStream] = useState<MediaStream>();
   const [remoteStreams, setRemoteStreams] = useState<MediaStream[]>([]);
@@ -11,7 +13,9 @@ export default function Home() {
   const { socket, sendMessage } = useWebsocket();
 
   const createPeerConnection = () => {
-    const peerConnection = new RTCPeerConnection();
+    const peerConnection = new RTCPeerConnection({
+      iceServers: [{ urls: stun }],
+    });
 
     peerConnection.ontrack = (event) => {
       console.log("ontrack", event);
