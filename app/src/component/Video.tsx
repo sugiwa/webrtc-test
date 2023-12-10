@@ -10,12 +10,11 @@ const Video = ({ stream }: Props) => {
   useEffect(() => {
     const setupMediaStream = () => {
       videoRef.current.srcObject = stream;
-      videoRef.current?.play()  
     };
     setupMediaStream();
   }, [stream]);
 
-  return <video ref={videoRef} autoPlay playsInline></video>;
+  return <video ref={videoRef} controls autoPlay playsInline></video>;
 };
 
 export default Video;
